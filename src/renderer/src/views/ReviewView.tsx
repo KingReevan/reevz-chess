@@ -3,7 +3,7 @@ import type { Module, Opening } from '@content'
 import { Board } from '../components/Board'
 import { Drill } from '../components/Drill'
 import { Icon } from '../components/Icon'
-import { SideChip, StageBar } from '../components/bits'
+import { SideChip, StageBar, HOME_CRUMB } from '../components/bits'
 import { fenAfter, lastMove, lineText, tokens } from '../lib/chess'
 import { moduleKey, ordered } from '../lib/content'
 import { preview, type Grade } from '../lib/srs'
@@ -145,7 +145,7 @@ export function ReviewView({ op }: { op: Opening }) {
   const tabs: [Tab, 'cards' | 'route' | 'table', string][] = [['cards', 'cards', 'Flashcards'], ['trainer', 'route', 'Line trainer'], ['sheet', 'table', 'Cheat sheet']]
   return (
     <>
-      <StageBar crumbs={[op.name, 'Revision hub']} />
+      <StageBar crumbs={[HOME_CRUMB, { label: op.name, to: { type: 'overview' } }, 'Revision hub']} />
       <div className="inner">
         <header className="l-head">
           <p className="eyebrow">Revision and mastery</p>

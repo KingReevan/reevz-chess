@@ -4,17 +4,20 @@ import { dayKey } from './dates'
 import { newCard, grade, type Card, type Grade } from './srs'
 
 export type View =
+  | { type: 'home' }
   | { type: 'overview' }
   | { type: 'module'; id: string }
   | { type: 'review' }
   | { type: 'exam' }
   | { type: 'play' }
-  | { type: 'settings' }
+  /** `from: 'home'` keeps the library layout (no course sidebars) when Settings is opened from the home grid. */
+  | { type: 'settings'; from?: 'home' }
 export type ThemePref = 'system' | 'light' | 'dark'
 export type BoardTheme = 'felt' | 'walnut' | 'ice' | 'slate'
 export type RightTab = 'coach' | 'play' | 'progress'
 
 interface Persisted {
+  /** The opening the learner last entered. */
   openingId: string
   /** "<opening>/<module>" → time finished */
   done: Record<string, number>
@@ -36,8 +39,8 @@ interface Persisted {
   rightOpen: boolean
   rightTab: RightTab
   view: View
+  /** Expanded chapters in the course sidebar, as "<opening>/<chapter>". */
   openChapters: string[]
-  courseOpen: boolean
   bot: string
   playAs: 'white' | 'black' | 'random'
   startFrom: 'start' | 'spanish'
@@ -45,6 +48,8 @@ interface Persisted {
 
 interface Actions {
   go: (v: View) => void
+  /** Opens a course: switches to that opening and shows `view` (its overview by default). */
+  enter: (openingId: string, view?: View) => void
   set: (p: Partial<Persisted>) => void
   toggleChapter: (id: string, open?: boolean) => void
   complete: (key: string) => void
@@ -61,7 +66,7 @@ const initial: Persisted = {
   done: {}, activity: {}, drills: {}, notes: {}, cards: {}, achievements: {}, examBest: {},
   theme: 'system', board: 'felt', dailyGoal: 2, sound: true,
   leftOpen: true, rightOpen: true, rightTab: 'coach',
-  view: { type: 'overview' }, openChapters: ['c1'], courseOpen: true,
+  view: { type: 'home' }, openChapters: ['ruy-lopez/c1'],
   bot: 'lucia', playAs: 'white', startFrom: 'start'
 }
 
@@ -70,6 +75,7 @@ export const useStore = create<Persisted & Actions>()(
     (set, get) => ({
       ...initial,
       go: (view) => set({ view }),
+      enter: (openingId, view = { type: 'overview' }) => set({ openingId, view }),
       set: (p) => set(p),
       toggleChapter: (id, open) => {
         const s = new Set(get().openChapters)
@@ -95,9 +101,23 @@ export const useStore = create<Persisted & Actions>()(
       },
       setNote: (key, text) => set((s) => ({ notes: { ...s.notes, [key]: text } })),
       recordExam: (openingId, score) => set((s) => ({ examBest: { ...s.examBest, [openingId]: Math.max(s.examBest[openingId] ?? 0, score) } })),
-      reset: () => set({ done: {}, activity: {}, drills: {}, notes: {}, cards: {}, achievements: {}, examBest: {}, view: { type: 'overview' } })
+      reset: () => set({ done: {}, activity: {}, drills: {}, notes: {}, cards: {}, achievements: {}, examBest: {}, view: { type: 'home' } })
     }),
-    { name: 'reevz-chess', version: 1 }
+    {
+      name: 'reevz-chess',
+      version: 2,
+      // v1 had one opening accordion in the sidebar and chapter ids without an opening prefix.
+      migrate: (old, version) => {
+        const s = old as Partial<Persisted> & { courseOpen?: boolean }
+        if (version < 2) {
+          s.openChapters = (s.openChapters ?? []).map((c) => (c.includes('/') ? c : `ruy-lopez/${c}`))
+          delete s.courseOpen
+        }
+        return s as Persisted & Actions
+      },
+      // The app always opens on the home grid; "Continue" there resumes the last course.
+      merge: (saved, current) => ({ ...current, ...(saved as Partial<Persisted>), view: { type: 'home' } })
+    }
   )
 )
 

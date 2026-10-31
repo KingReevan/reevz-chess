@@ -4,7 +4,7 @@ import type { Key } from 'chessground/types'
 import type { Opening } from '@content'
 import { Board, BoardTools } from '../components/Board'
 import { Glyph, Icon } from '../components/Icon'
-import { StageBar } from '../components/bits'
+import { StageBar, HOME_CRUMB } from '../components/bits'
 import { botById, candidates, openingInfo, pickWeighted } from '../lib/book'
 import { colorOf, dests, tokens, type Color } from '../lib/chess'
 import { engine } from '../lib/engine'
@@ -157,7 +157,7 @@ export function PlayView({ op }: { op: Opening }) {
 
   return (
     <>
-      <StageBar crumbs={['Practice game', `${bot.name} · ${bot.elo}`]} />
+      <StageBar crumbs={[HOME_CRUMB, { label: op.name, to: { type: 'overview' } }, `Practice game · ${bot.name}`]} />
       <div className="inner">
         <div className="pl-head">
           <span className="avatar"><Glyph g={bot.glyph} /></span>

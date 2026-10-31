@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { Opening, Question } from '@content'
 import { Icon } from '../components/Icon'
 import { QuestionCard } from '../components/Quiz'
-import { Bar, StageBar } from '../components/bits'
+import { Bar, StageBar, HOME_CRUMB } from '../components/bits'
 import { ordered } from '../lib/content'
 import { award, doneCount } from '../lib/progress'
 import { sound } from '../lib/sound'
@@ -109,7 +109,7 @@ export function ExamView({ op }: { op: Opening }) {
 
   return (
     <>
-      <StageBar crumbs={[op.name, 'Final exam']} />
+      <StageBar crumbs={[HOME_CRUMB, { label: op.name, to: { type: 'overview' } }, 'Final exam']} />
       <div className="inner">
         <header className="l-head">
           <p className="eyebrow">Revision and mastery</p>

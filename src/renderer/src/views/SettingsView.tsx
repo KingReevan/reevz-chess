@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BoardSwatches } from '../components/Board'
 import { Icon } from '../components/Icon'
-import { StageBar } from '../components/bits'
+import { StageBar, HOME_CRUMB } from '../components/bits'
 import { useLive, useStore, type ThemePref } from '../lib/store'
 
 export function SettingsView() {
@@ -31,7 +31,7 @@ export function SettingsView() {
 
   return (
     <>
-      <StageBar crumbs={['Settings']} />
+      <StageBar crumbs={[HOME_CRUMB, 'Settings']} />
       <div className="inner">
         <header className="l-head">
           <p className="eyebrow">Reevz Chess{version ? ` · version ${version}` : ''}</p>

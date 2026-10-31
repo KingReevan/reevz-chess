@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react'
 import type { Chapter, Module, Opening } from '@content'
-import { lineText } from '../lib/chess'
-import { moduleKey, openings, ordered } from '../lib/content'
+import { fenAfter, lineText } from '../lib/chess'
+import { chapterKey, moduleKey, ordered } from '../lib/content'
 import { chapterProgress, doneCount } from '../lib/progress'
 import { useLive, useStore } from '../lib/store'
 import { Board } from './Board'
 import { Icon } from './Icon'
 import { Bar, SideChip, SideDot } from './bits'
-import { fenAfter } from '../lib/chess'
 
 function hl(text: string, q: string) {
   if (!q) return text
@@ -19,14 +18,12 @@ function hl(text: string, q: string) {
 const matches = (m: Module, ch: Chapter, q: string) =>
   m.title.toLowerCase().includes(q) || m.id === q || m.key.name.toLowerCase().includes(q) || lineText(m.key.moves).toLowerCase().includes(q) || ch.title.toLowerCase().includes(q) || ch.tags.includes(q)
 
-function Course({ op }: { op: Opening }) {
+/** The chapters of one course as accordions, filtered by the search box. */
+function Chapters({ op }: { op: Opening }) {
   const q = useLive((s) => s.query).trim().toLowerCase()
   const s = useStore()
   const cur = s.view.type === 'module' ? s.view.id : s.view.type
-  const n = doneCount(op, s.done)
-  const total = ordered(op).length
-  const open = s.courseOpen || !!q
-  const allDone = total > 0 && n === total
+  const allDone = doneCount(op, s.done) === ordered(op).length
 
   let hits = 0
   const chapters = op.chapters.map((ch) => {
@@ -34,11 +31,12 @@ function Course({ op }: { op: Opening }) {
     if (q && !mods.length) return null
     hits += mods.length
     const [d, t] = chapterProgress(op, ch.id, s.done)
-    const isOpen = q ? true : s.openChapters.includes(ch.id)
+    const key = chapterKey(op, ch.id)
+    const isOpen = q ? true : s.openChapters.includes(key)
     const full = t > 0 && d === t
     return (
       <div key={ch.id} className={`ch${isOpen ? ' open' : ''}${full ? ' full' : ''}`}>
-        <button className="ch-head" aria-expanded={isOpen} onClick={() => s.toggleChapter(ch.id)}>
+        <button className="ch-head" aria-expanded={isOpen} onClick={() => s.toggleChapter(key)}>
           <span className="ch-n">{full ? <Icon name="check" /> : ch.n}</span>
           <span className="ch-t">{hl(ch.title, q)}</span>
           <SideDot side={ch.side} />
@@ -68,76 +66,89 @@ function Course({ op }: { op: Opening }) {
   if (q && examHit) hits++
 
   return (
-    <div className={`oc${open ? ' open' : ''}`}>
-      <button className="oc-head" aria-expanded={open} onClick={() => s.set({ courseOpen: !s.courseOpen })}>
-        <span className="oc-thumb"><Board fen={fenAfter(op.moves)} orientation="white" mini /></span>
-        <span className="oc-meta">
-          <span className="oc-name">{op.name}</span>
-          <span className="oc-moves">{lineText(op.moves)}</span>
-          <span className="oc-row"><SideChip side={op.side} /></span>
-          <span className="oc-row"><Bar value={total ? n / total : 0} /><span className="count">{n}/{total}</span></span>
-        </span>
-        <Icon name="chev" className="oc-chev" />
-      </button>
-      <div className="fold"><div><div className="oc-body">
-        {!q && (
-          <button className={`ov-row${cur === 'overview' ? ' on' : ''}`} onClick={() => s.go({ type: 'overview' })}>
-            <Icon name="grid" /> Course overview
+    <>
+      {!q && (
+        <button className={`ov-row${cur === 'overview' ? ' on' : ''}`} onClick={() => s.go({ type: 'overview' })}>
+          <Icon name="grid" /> Course overview
+        </button>
+      )}
+      {chapters}
+      {(reviewHit || examHit) && (
+        <div className="ch open">
+          <button className="ch-head" aria-expanded="true" disabled>
+            <span className="ch-n">{op.chapters.length + 1}</span>
+            <span className="ch-t">Revision and mastery</span>
+            <SideDot side="both" />
+            <span className="count" />
+            <span />
           </button>
-        )}
-        {chapters}
-        {(reviewHit || examHit) && (
-          <div className="ch open">
-            <button className="ch-head" aria-expanded="true" disabled>
-              <span className="ch-n">{op.chapters.length + 1}</span>
-              <span className="ch-t">Revision and mastery</span>
-              <SideDot side="both" />
-              <span className="count" />
-              <span />
-            </button>
-            <div className="fold"><div><div className="mods">
-              {reviewHit && (
-                <button className={`row tool${cur === 'review' ? ' on' : ''}`} onClick={() => s.go({ type: 'review' })}>
-                  <span className="st"><Icon name="cards" /></span><span className="row-t">Revision hub</span><span className="row-m">15m</span>
-                </button>
-              )}
-              {examHit && (
-                <button className={`row tool${cur === 'exam' ? ' on' : ''}`} onClick={() => s.go({ type: 'exam' })}>
-                  <span className="st"><Icon name={allDone ? 'trophy' : 'lock'} /></span><span className="row-t">Final exam</span><span className="row-m">{allDone ? '45m' : 'locked'}</span>
-                </button>
-              )}
-            </div></div></div>
-          </div>
-        )}
-        {q && !hits && <p className="empty">Nothing matches “{q}”. Try Marshall, Berlin or trap.</p>}
-      </div></div></div>
-    </div>
+          <div className="fold"><div><div className="mods">
+            {reviewHit && (
+              <button className={`row tool${cur === 'review' ? ' on' : ''}`} onClick={() => s.go({ type: 'review' })}>
+                <span className="st"><Icon name="cards" /></span><span className="row-t">Revision hub</span><span className="row-m">15m</span>
+              </button>
+            )}
+            {examHit && (
+              <button className={`row tool${cur === 'exam' ? ' on' : ''}`} onClick={() => s.go({ type: 'exam' })}>
+                <span className="st"><Icon name={allDone ? 'trophy' : 'lock'} /></span><span className="row-t">Final exam</span><span className="row-m">{allDone ? '45m' : 'locked'}</span>
+              </button>
+            )}
+          </div></div></div>
+        </div>
+      )}
+      {q && !hits && <p className="empty">Nothing in this course matches “{q}”. Try Marshall, Berlin or trap.</p>}
+    </>
   )
 }
 
-export function LeftSidebar() {
+/** Sidebar shown inside a course: back to the grid, the course card, search and its chapters. */
+export function LeftSidebar({ op }: { op: Opening }) {
   const query = useLive((s) => s.query)
   const setQuery = useLive((s) => s.setQuery)
   const view = useStore((s) => s.view)
+  const done = useStore((s) => s.done)
   const go = useStore((s) => s.go)
   const list = useRef<HTMLDivElement>(null)
+  const n = doneCount(op, done)
+  const total = ordered(op).length
 
   useEffect(() => {
     if (view.type !== 'module') return
     const el = list.current?.querySelector(`[data-row="${view.id}"]`)
-    setTimeout(() => el?.scrollIntoView({ block: 'nearest' }), 300)
+    const t = setTimeout(() => el?.scrollIntoView({ block: 'nearest' }), 300)
+    return () => clearTimeout(t)
   }, [view])
 
+  // A search typed in one course shouldn't follow the learner into the next.
+  useEffect(() => () => setQuery(''), [op.id, setQuery])
+
   return (
-    <aside className="left" aria-label="Courses">
+    <aside className="left" aria-label={`${op.name} course`}>
+      <div className="side-top">
+        <button className="back" onClick={() => { setQuery(''); go({ type: 'home' }) }}>
+          <Icon name="left" /> All openings
+        </button>
+        <button className="course-head" onClick={() => go({ type: 'overview' })} title="Course overview">
+          <span className="course-thumb"><Board fen={fenAfter(op.moves)} orientation="white" mini /></span>
+          <span className="course-meta">
+            <span className="course-name">{op.name}</span>
+            <span className="course-moves">{lineText(op.moves)}</span>
+            <SideChip side={op.side} />
+          </span>
+        </button>
+        <div className="course-prog">
+          <Bar value={total ? n / total : 0} />
+          <span className="count">{n}/{total}</span>
+        </div>
+      </div>
       <div className="search">
         <Icon name="search" />
         <input
           id="search"
           type="search"
-          placeholder="Search modules, lines, traps"
+          placeholder="Search this course"
           autoComplete="off"
-          aria-label="Search modules"
+          aria-label={`Search the ${op.name} course`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Escape') setQuery('') }}
@@ -145,11 +156,7 @@ export function LeftSidebar() {
         <kbd>Ctrl K</kbd>
       </div>
       <div className="side-scroll" ref={list}>
-        <p className="side-label">Openings</p>
-        {openings.map((op) => <Course key={op.id} op={op} />)}
-      </div>
-      <div className="side-foot">
-        <button className={`btn sm${view.type === 'settings' ? ' primary' : ''}`} onClick={() => go({ type: 'settings' })}><Icon name="gear" /> Settings</button>
+        <Chapters op={op} />
       </div>
     </aside>
   )

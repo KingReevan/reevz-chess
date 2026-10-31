@@ -1,7 +1,7 @@
 import type { Opening } from '@content'
 import { BOTS, botById, candidates, openingInfo } from '../lib/book'
 import { moveLabel } from '../lib/chess'
-import { chapterOf, moduleKey, ordered } from '../lib/content'
+import { chapterOf, moduleKey, nextModule, ordered } from '../lib/content'
 import { lastWeek, streaks } from '../lib/dates'
 import { ACHIEVEMENTS, chapterProgress, doneCount, todayCount } from '../lib/progress'
 import { useLive, useStore, type RightTab } from '../lib/store'
@@ -86,7 +86,7 @@ function Coach({ op }: { op: Opening }) {
   }
 
   const list = ordered(op)
-  const next = list.find(({ m }) => !done[moduleKey(op, m.id)])?.m
+  const next = nextModule(op, done)
   return (
     <>
       {next && (
@@ -109,6 +109,7 @@ function Coach({ op }: { op: Opening }) {
         <ul className="ideas">
           <li>← → step through a walkthrough board</li>
           <li>Ctrl+K search · Ctrl+B course sidebar · Ctrl+J coach sidebar</li>
+          <li>Click the logo or “Openings” to go back to all courses</li>
         </ul>
       </div>
     </>

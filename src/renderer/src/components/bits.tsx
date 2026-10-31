@@ -1,5 +1,5 @@
 import type { Module, Side } from '@content'
-import { useStore } from '../lib/store'
+import { useStore, type View } from '../lib/store'
 import { Icon } from './Icon'
 
 const SIDE_LABEL: Record<Side, string> = { white: 'White', black: 'Black', both: 'White · Black' }
@@ -25,7 +25,12 @@ export function Bar({ value }: { value: number }) {
   return <span className="bar"><i style={{ width: `${Math.round(Math.min(1, Math.max(0, value)) * 100)}%` }} /></span>
 }
 
-export function StageBar({ crumbs, prev, next }: { crumbs: string[]; prev?: Module; next?: Module }) {
+/** A breadcrumb: plain text, or a link to another view. */
+export type Crumb = string | { label: string; to: View }
+/** First crumb of every page: back to the grid of openings. */
+export const HOME_CRUMB: Crumb = { label: 'Openings', to: { type: 'home' } }
+
+export function StageBar({ crumbs, prev, next }: { crumbs: Crumb[]; prev?: Module; next?: Module }) {
   const go = useStore((s) => s.go)
   const nav = prev !== undefined || next !== undefined
   return (
@@ -34,7 +39,7 @@ export function StageBar({ crumbs, prev, next }: { crumbs: string[]; prev?: Modu
         {crumbs.map((c, i) => (
           <span key={i} style={{ display: 'contents' }}>
             {i > 0 && <Icon name="right" />}
-            <span>{c}</span>
+            {typeof c === 'string' ? <span>{c}</span> : <button className="crumb" onClick={() => go(c.to)}>{c.label}</button>}
           </span>
         ))}
       </nav>

@@ -1,9 +1,9 @@
 import type { MapNode, Opening } from '@content'
 import { Board } from '../components/Board'
 import { Icon } from '../components/Icon'
-import { Bar, SideChip, StageBar } from '../components/bits'
-import { fenAfter, lastMove } from '../lib/chess'
-import { moduleKey, ordered } from '../lib/content'
+import { Bar, SideChip, StageBar, HOME_CRUMB } from '../components/bits'
+import { fenAfter, lastMove, lineText } from '../lib/chess'
+import { courseMinutes, moduleKey, nextModule, ordered } from '../lib/content'
 import { chapterProgress, doneCount } from '../lib/progress'
 import { useStore } from '../lib/store'
 
@@ -81,18 +81,18 @@ export function OverviewView({ op }: { op: Opening }) {
   const go = useStore((s) => s.go)
   const list = ordered(op)
   const n = doneCount(op, done)
-  const next = list.find(({ m }) => !done[moduleKey(op, m.id)])?.m ?? list[0]?.m
-  const minutes = list.reduce((a, { m }) => a + m.minutes, 0)
+  const next = nextModule(op, done) ?? list[0]?.m
+  const minutes = courseMinutes(op)
 
   return (
     <>
-      <StageBar crumbs={[op.name, 'Course overview']} />
+      <StageBar crumbs={[HOME_CRUMB, op.name]} />
       <div className="inner">
         <section className="hero">
           <div>
             <span className="eyebrow">Opening course · ECO {op.eco}</span>
             <h1>The {op.name}</h1>
-            <p className="alias">{op.alias} · 1.e4 e5 2.Nf3 Nc6 3.Bb5</p>
+            <p className="alias">{op.alias} · {lineText(op.moves)}</p>
             <p className="about">{op.about}</p>
             <div className="hero-stats">
               <span><b>{list.length}</b>modules</span>

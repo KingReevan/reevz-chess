@@ -3,7 +3,7 @@ import type { Chapter, Module, Opening, Section } from '@content'
 import { Drill } from '../components/Drill'
 import { Icon, type IconName } from '../components/Icon'
 import { Quiz } from '../components/Quiz'
-import { LevelBars, SideChip, StageBar } from '../components/bits'
+import { LevelBars, SideChip, StageBar, HOME_CRUMB } from '../components/bits'
 import { Walkthrough } from '../components/Walkthrough'
 import { moduleKey, ordered } from '../lib/content'
 import { award, completeModule } from '../lib/progress'
@@ -66,7 +66,7 @@ export function ModuleView({ op, m, ch }: { op: Opening; m: Module; ch: Chapter 
 
   return (
     <>
-      <StageBar crumbs={[op.name, `Chapter ${ch.n}`, `Module ${m.id}`]} prev={prev} next={next} />
+      <StageBar crumbs={[HOME_CRUMB, { label: op.name, to: { type: 'overview' } }, `Chapter ${ch.n}`, `Module ${m.id}`]} prev={prev} next={next} />
       <div className="inner" key={m.id}>
         <header className="l-head">
           <p className="eyebrow">Chapter {ch.n} · {ch.title}</p>

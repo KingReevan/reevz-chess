@@ -54,7 +54,7 @@ tests/                      content validator, logic tests, end-to-end test
 Read `content/AUTHORING.md`, edit or add a file in `content/openings/<opening>/modules/`, list it in that
 opening's `chapters.ts`, then run `npm run test:content`. The validator replays every move with chess.js,
 so an illegal or mistyped move can't ship. To add a new opening, create a folder next to `ruy-lopez/`
-with the same shape and add it to `content/index.ts`; it appears in the sidebar with its White/Black badge.
+with the same shape and add it to `content/index.ts`; it appears as a card on the home grid, with its White/Black badge and completion.
 
 ### Publishing a release
 

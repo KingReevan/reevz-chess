@@ -22,7 +22,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'maestro', title: 'Maestro', desc: 'Pass the final exam', glyph: '♚' }
 ]
 
-const CHAPTER_BADGE: Record<string, string> = { c1: 'ch1', c4: 'torture', c5: 'marshall', c7: 'wall' }
+/** Badges for finishing a chapter, per opening. */
+const CHAPTER_BADGE: Record<string, Record<string, string>> = { 'ruy-lopez': { c1: 'ch1', c4: 'torture', c5: 'marshall', c7: 'wall' } }
 
 export const doneCount = (op: Opening, done: Record<string, number>) => ordered(op).filter(({ m }) => done[moduleKey(op, m.id)]).length
 export const chapterProgress = (op: Opening, chId: string, done: Record<string, number>): [number, number] => {
@@ -59,9 +60,10 @@ export function completeModule(op: Opening, id: string, from?: DOMRect) {
   if (todayCount(after.activity) === after.dailyGoal) setTimeout(() => live.toast({ html: `Daily goal reached: ${after.dailyGoal} module${after.dailyGoal > 1 ? 's' : ''} today` }), 1200)
   award('first')
   const ch = op.chapters.find((c) => c.modules.includes(id))
-  if (ch && CHAPTER_BADGE[ch.id]) {
+  const badge = ch && CHAPTER_BADGE[op.id]?.[ch.id]
+  if (ch && badge) {
     const [d, t] = chapterProgress(op, ch.id, after.done)
-    if (d === t) award(CHAPTER_BADGE[ch.id])
+    if (d === t) award(badge)
   }
   if (streaks(after.activity).current >= 7) award('week')
 }

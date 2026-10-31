@@ -3,16 +3,19 @@ import { useLive, useStore } from '../lib/store'
 import logo from '../assets/logo.png'
 import { Glyph, Icon } from './Icon'
 
-export function TitleBar({ title, update }: { title: string; update: string | null }) {
+export function TitleBar({ title, update, library }: { title: string; update: string | null; library: boolean }) {
   const s = useStore()
   const dark = document.documentElement.dataset.theme === 'dark'
+  const inSettings = s.view.type === 'settings'
   return (
     <header className="titlebar">
       <div className="tb-left">
-        <button className="ibtn" aria-pressed={s.leftOpen} aria-label="Toggle course sidebar" title="Course sidebar (Ctrl+B)" onClick={() => s.set({ leftOpen: !s.leftOpen })}>
-          <Icon name="panelLeft" />
-        </button>
-        <div className="brand"><img className="logo" src={logo} alt="" />Reevz Chess</div>
+        {!library && (
+          <button className="ibtn" aria-pressed={s.leftOpen} aria-label="Toggle course sidebar" title="Course sidebar (Ctrl+B)" onClick={() => s.set({ leftOpen: !s.leftOpen })}>
+            <Icon name="panelLeft" />
+          </button>
+        )}
+        <button className="brand" title="All openings" onClick={() => s.go({ type: 'home' })}><img className="logo" src={logo} alt="" />Reevz Chess</button>
       </div>
       <div className="tb-mid">{title}</div>
       <div className="tb-right">
@@ -24,9 +27,14 @@ export function TitleBar({ title, update }: { title: string; update: string | nu
         <button className="ibtn" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} title="Light / dark" onClick={() => s.set({ theme: dark ? 'light' : 'dark' })}>
           <Icon name={dark ? 'sun' : 'moon'} />
         </button>
-        <button className="ibtn" aria-pressed={s.rightOpen} aria-label="Toggle coach sidebar" title="Coach sidebar (Ctrl+J)" onClick={() => s.set({ rightOpen: !s.rightOpen })}>
-          <Icon name="panelRight" />
+        <button className="ibtn" aria-pressed={inSettings} aria-label="Settings" title="Settings" onClick={() => s.go(library ? { type: 'settings', from: 'home' } : { type: 'settings' })}>
+          <Icon name="gear" />
         </button>
+        {!library && (
+          <button className="ibtn" aria-pressed={s.rightOpen} aria-label="Toggle coach sidebar" title="Coach sidebar (Ctrl+J)" onClick={() => s.set({ rightOpen: !s.rightOpen })}>
+            <Icon name="panelRight" />
+          </button>
+        )}
       </div>
     </header>
   )
