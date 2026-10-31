@@ -31,7 +31,7 @@ export function App() {
           fontWeight: 500
         }}
       >
-        ites time to let go of your neighbour
+        it's time to let go of your Neighbor
       </p>
     </div>
   )
