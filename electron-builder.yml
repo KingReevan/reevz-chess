@@ -1,0 +1,30 @@
+appId: com.kingreevan.reevzchess
+productName: Reevz Chess
+copyright: Copyright © 2026 KingReevan
+directories:
+  output: release/${version}
+  buildResources: build
+files:
+  - out/**
+  - package.json
+  - "!**/*.map"
+asarUnpack: []
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.png
+  artifactName: Reevz-Chess-Setup-${version}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Reevz Chess
+  uninstallDisplayName: Reevz Chess
+publish:
+  provider: github
+  owner: KingReevan
+  repo: reevz-chess
+  releaseType: release

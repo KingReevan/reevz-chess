@@ -1,0 +1,30 @@
+/* Chessground board theming. Squares are a CSS checkerboard so the colours follow the board theme setting. */
+.board { position: relative; width: 100%; aspect-ratio: 1; max-width: 100%; border-radius: 6px; overflow: hidden; container-type: inline-size; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08), var(--shadow-sm); }
+.board.mini { border-radius: 5px; box-shadow: 0 0 0 1px var(--line); }
+.board .cg-wrap { width: 100%; height: 100%; }
+.board.ok { animation: okPulse 0.6s; }
+.board.no { animation: shake 0.4s; }
+@keyframes okPulse { 0% { box-shadow: 0 0 0 0 var(--accent); } 100% { box-shadow: 0 0 0 12px transparent; } }
+@keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+
+cg-board { background: repeating-conic-gradient(var(--sq-d) 0 25%, var(--sq-l) 0 50%) 0 0 / 25% 25%; }
+cg-board square.last-move { background-color: var(--hl-last); }
+cg-board square.selected { background-color: var(--hl-sel); }
+cg-board square.move-dest { background: radial-gradient(var(--dot) 19%, rgb(0 0 0 / 0) 20%); }
+cg-board square.oc.move-dest { background: radial-gradient(transparent 0%, transparent 78%, var(--dot) 80%); }
+cg-board square.move-dest:hover { background: var(--hl-hover); }
+cg-board square.check { background: radial-gradient(ellipse at center, rgb(222 48 38 / 1) 0%, rgb(222 48 38 / 0.65) 30%, rgb(222 48 38 / 0) 75%); }
+cg-board square.mark { background: radial-gradient(circle, transparent 56%, var(--hl-mark) 58%, var(--hl-mark) 66%, transparent 68%); }
+cg-board square.last-move.mark { background: radial-gradient(circle, transparent 56%, var(--hl-mark) 58%, var(--hl-mark) 66%, transparent 68%), var(--hl-last); }
+
+.cg-wrap coords { font: 700 2.3cqw / 1 var(--f-body); opacity: 1; }
+.cg-wrap coords.ranks { left: 0.6cqw; top: 0; height: 100%; width: auto; }
+.cg-wrap coords.ranks coord { transform: none; padding-top: 0.6cqw; }
+.cg-wrap coords.files { left: 0; bottom: 0; width: 100%; height: auto; text-transform: none; }
+.cg-wrap coords.files coord { text-align: right; padding: 0 0.8cqw 0.5cqw 0; }
+.orientation-white coords.ranks coord:nth-child(odd), .orientation-white coords.files coord:nth-child(odd),
+.orientation-black coords.ranks coord:nth-child(even), .orientation-black coords.files coord:nth-child(even) { color: var(--co-on-d); }
+.orientation-white coords.ranks coord:nth-child(even), .orientation-white coords.files coord:nth-child(even),
+.orientation-black coords.ranks coord:nth-child(odd), .orientation-black coords.files coord:nth-child(odd) { color: var(--co-on-l); }
+.cg-wrap .cg-shapes { opacity: 0.85; }
+.board.mini coords { display: none; }

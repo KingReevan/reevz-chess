@@ -1,0 +1,103 @@
+/* Design tokens. Light: tournament-felt green on cool slate. Dark: ChatGPT-style neutral greys with its green accent. */
+:root {
+  --win: #f7f9f8;
+  --side: #eef2f0;
+  --card: #ffffff;
+  --sunk: #e8eeeb;
+  --hover: #e3e9e6;
+  --line: #d5ddd9;
+  --line-2: #b8c5bf;
+  --ink: #12201a;
+  --ink-2: #384941;
+  --muted: #63746c;
+  --accent: #14765a;
+  --accent-2: #0e5d47;
+  --on-accent: #ffffff;
+  --accent-soft: #dbeee5;
+  --accent-line: #a1d2bd;
+  --brass: #94600c;
+  --brass-soft: #f6ead2;
+  --brass-line: #e3c78e;
+  --bad: #b4382d;
+  --bad-soft: #f8e1dd;
+  --bad-line: #ebb2aa;
+  --pm-edge: #151b18;
+  --pm-w: #fafaf6;
+  --pm-b: #151b18;
+  --shadow: 0 1px 2px rgb(18 32 26 / 0.06), 0 12px 32px rgb(18 32 26 / 0.12);
+  --shadow-sm: 0 1px 2px rgb(18 32 26 / 0.1);
+  --scrim: rgb(10 18 14 / 0.32);
+  --toast-bg: #12201a;
+  --toast-fg: #f7f9f8;
+
+  /* board (the same in both themes, picked in Settings) */
+  --sq-l: #e4ead6;
+  --sq-d: #84a48d;
+  --co-on-l: #6f8f79;
+  --co-on-d: #eef2e4;
+  --hl-last: rgb(240 196 60 / 0.45);
+  --hl-sel: rgb(20 118 90 / 0.45);
+  --hl-hover: rgb(20 118 90 / 0.25);
+  --hl-mark: rgb(229 161 26 / 0.95);
+  --dot: rgb(18 32 26 / 0.28);
+  --ar-green: #1e8e4f;
+  --ar-red: #d9443a;
+  --ar-yellow: #e5a11a;
+  --ar-blue: #2f6fd6;
+
+  --f-display: 'Bricolage Grotesque Variable', 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', Consolas, 'Cascadia Mono', ui-monospace, monospace;
+
+  --t-xs: 12px;
+  --t-sm: 13.5px;
+  --t-base: 15.5px;
+  --t-md: 17px;
+  --t-lg: 21px;
+  --t-xl: 28px;
+  --t-2xl: 36px;
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 14px;
+  --titlebar: 44px;
+  --overlay-w: 140px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --win: #212121;
+  --side: #171717;
+  --card: #2a2a2a;
+  --sunk: #2f2f2f;
+  --hover: #333333;
+  --line: #383838;
+  --line-2: #4d4d4d;
+  --ink: #ececec;
+  --ink-2: #c4c4c4;
+  --muted: #8f8f8f;
+  --accent: #10a37f;
+  --accent-2: #19c37d;
+  --on-accent: #ffffff;
+  --accent-soft: #1c3a32;
+  --accent-line: #1f6b55;
+  --brass: #e8b04a;
+  --brass-soft: #34291a;
+  --brass-line: #5c4720;
+  --bad: #f26b6b;
+  --bad-soft: #3b2424;
+  --bad-line: #6e3333;
+  --pm-edge: #a8a8a8;
+  --pm-w: #fafaf6;
+  --pm-b: #121212;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 16px 40px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --scrim: rgb(0 0 0 / 0.55);
+  --toast-bg: #ececec;
+  --toast-fg: #171717;
+  --dot: rgb(10 10 10 / 0.32);
+  color-scheme: dark;
+}
+
+:root[data-board='walnut'] { --sq-l: #f0d9b5; --sq-d: #b58863; --co-on-l: #b58863; --co-on-d: #f0d9b5; }
+:root[data-board='ice'] { --sq-l: #dee4e7; --sq-d: #8aa1ad; --co-on-l: #7e95a1; --co-on-d: #eef2f4; }
+:root[data-board='slate'] { --sq-l: #c9c9c9; --sq-d: #7d8a96; --co-on-l: #6d7a86; --co-on-d: #e2e2e2; }

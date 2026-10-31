@@ -1,0 +1,46 @@
+{
+  "name": "reevz-chess",
+  "productName": "Reevz Chess",
+  "version": "1.0.0",
+  "description": "Learn chess openings one bite-sized module at a time.",
+  "main": "./out/main/index.js",
+  "author": "KingReevan",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:content": "vitest run tests/content.test.ts",
+    "e2e": "node tests/e2e/smoke.mjs",
+    "postinstall": "node scripts/copy-stockfish.mjs",
+    "dist": "npm run build && electron-builder --win nsis",
+    "release": "npm run build && electron-builder --win nsis --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "devDependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "chess.js": "^1.4.0",
+    "chessground": "^9.2.1",
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
+    "electron-vite": "^6.0.0",
+    "playwright": "^1.64.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "stockfish": "^19.0.1",
+    "typescript": "~5.9.0",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5",
+    "zustand": "^5.0.16"
+  }
+}
