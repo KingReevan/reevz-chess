@@ -2,8 +2,11 @@
 
 A desktop app for learning chess openings deeply, one bite-sized module at a time.
 
-Two courses so far, each taught from both sides and shown as cards on the home screen:
+Three courses so far, each taught from both sides and shown as cards on the home screen, sorted by ECO code:
 
+- **The Sicilian Defense**: 75 modules in 9 chapters, from why 1...c5 works to the Najdorf, the Dragon, the
+  Sveshnikov and the ...e6 systems, plus the anti-Sicilians beginners meet most (the Alapin, the Smith–Morra,
+  2.Bc4 and 2.Qh5) and the Rossolimo and Moscow.
 - **The Ruy Lopez** (Spanish Game): 68 modules in 8 chapters, from opening principles for beginners to the
   Marshall Attack, the Berlin endgame and the Closed main lines.
 - **The King's Indian Defense**: 69 modules in 8 chapters, from the fianchetto set-up to the Mar del Plata,

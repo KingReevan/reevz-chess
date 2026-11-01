@@ -4,7 +4,7 @@ import { Board } from '../components/Board'
 import { Glyph, Icon } from '../components/Icon'
 import { Bar, Ring, SideChip } from '../components/bits'
 import { fenAfter, lastMove, lineText } from '../lib/chess'
-import { courseMinutes, nextModule, openings, ordered } from '../lib/content'
+import { nextModule, openings, ordered } from '../lib/content'
 import { streaks } from '../lib/dates'
 import { allBadges, doneCount, todayCount } from '../lib/progress'
 import { useStore } from '../lib/store'
@@ -23,7 +23,6 @@ function CourseCard({ op }: { op: Opening }) {
   const next = nextModule(op, done)
   const complete = total > 0 && n === total
   const status = complete ? 'Completed' : n ? 'In progress' : 'Not started'
-  const hours = Math.max(1, Math.round(courseMinutes(op) / 60))
 
   return (
     <article className={`course-card${complete ? ' complete' : ''}`} data-opening={op.id}>
@@ -36,11 +35,7 @@ function CourseCard({ op }: { op: Opening }) {
           <span className="cc-eco">ECO {op.eco}</span>
           <span className="cc-name">{op.name}</span>
           <span className="cc-alias">{op.alias}</span>
-          <span className="cc-moves">{lineText(op.moves)}</span>
-          <span className="cc-tags">
-            <SideChip side={op.side} />
-            <span className="cc-facts">{total} modules · {op.chapters.length} chapters · {hours} h</span>
-          </span>
+          <span className="cc-tags"><SideChip side={op.side} /></span>
         </span>
       </button>
       <div className="cc-foot">

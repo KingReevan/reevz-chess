@@ -475,9 +475,7 @@ mark { background: var(--brass-soft); color: inherit; border-radius: 3px; paddin
 .cc-eco { font: 700 11px/1.3 var(--f-body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
 .cc-name { font: 800 var(--t-xl)/1.05 var(--f-display); letter-spacing: -0.02em; margin-top: 4px; }
 .cc-alias { color: var(--muted); font-size: var(--t-sm); margin-top: 2px; }
-.cc-moves { font: 500 12px/1.4 var(--f-mono); color: var(--ink-2); margin-top: 10px; padding: 4px 8px; border-radius: 6px; background: var(--sunk); }
-.cc-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 12px; }
-.cc-facts { font-size: var(--t-xs); color: var(--muted); }
+.cc-tags { display: flex; margin-top: 12px; }
 .cc-foot { display: grid; gap: 10px; padding: 14px 18px 16px; }
 .cc-prog { display: flex; align-items: center; gap: 10px; }
 .cc-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

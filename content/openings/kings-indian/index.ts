@@ -61,7 +61,7 @@ export const kingsIndian: Opening = {
     { id: 'kid-exam', title: 'Indian King', desc: "Pass the King's Indian final exam", glyph: '♚', for: { exam: true } }
   ],
   bots: {
-    easy: { name: 'Kiddo', glyph: '♟', blurb: 'Plays fast and falls for traps. Good for practising tricks.', hi: "Bishop on g7, king on g8. That's all I know. Let's play!" },
+    easy: { name: 'Kiddo', glyph: '♟', blurb: 'Plays fast and falls for traps. Good for practicing tricks.', hi: "Bishop on g7, king on g8. That's all I know. Let's play!" },
     club: { name: 'Asha', glyph: '♞', blurb: 'Follows the main lines from the course, then plays sensibly.', hi: "Let's see if you remember your lines." },
     sharp: { name: 'Typhoon', glyph: '♜', blurb: 'Loves sharp lines: the Mar del Plata, the Bayonet and the Sämisch.', hi: 'Pawns forward, straight at the king. Ready?', likes: /mar del plata|bayonet|s[aä]misch|four pawns|gambit/i },
     master: { name: 'Sir Kingsley', glyph: '♚', blurb: 'Knows every line in the course, then plays like a master.', hi: 'Fianchetto, castle, then strike. Shall we?' }

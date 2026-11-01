@@ -61,7 +61,7 @@ export const ruyLopez: Opening = {
     { id: 'maestro', title: 'Maestro', desc: 'Pass the Ruy Lopez final exam', glyph: '♚', for: { exam: true } }
   ],
   bots: {
-    easy: { name: 'Pepe', glyph: '♟', blurb: 'Plays fast and falls for traps. Good for practising tricks.', hi: "¡Hola! I learned the Ruy Lopez yesterday. Let's go!", botWins: '¡Gracias! Want a rematch?', youWin: '¡Bien jugado! Well played.' },
+    easy: { name: 'Pepe', glyph: '♟', blurb: 'Plays fast and falls for traps. Good for practicing tricks.', hi: "¡Hola! I learned the Ruy Lopez yesterday. Let's go!", botWins: '¡Gracias! Want a rematch?', youWin: '¡Bien jugado! Well played.' },
     club: { name: 'Lucía', glyph: '♞', blurb: 'Follows the main lines from the course, then plays sensibly.', hi: "Let's see if you remember your lines.", botWins: '¡Gracias! Want a rematch?', youWin: '¡Bien jugado! Well played.' },
     sharp: { name: 'El Toro', glyph: '♜', blurb: 'Loves sharp lines: the Marshall Attack and the Schliemann.', hi: 'I charge at kings. Ready?', botWins: '¡Gracias! Want a rematch?', youWin: '¡Bien jugado! Well played.', likes: /marshall|schliemann|gambit|dilworth|riga/i },
     master: { name: 'Don Ruy', glyph: '♚', blurb: 'Knows every line in the course, then plays like a master.', hi: 'I wrote the book on this. Literally, in 1561.', botWins: '¡Gracias! Want a rematch?', youWin: '¡Bien jugado! Well played.' }

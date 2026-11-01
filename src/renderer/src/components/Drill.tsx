@@ -110,7 +110,7 @@ export function Drill({ d, onSolved }: { d: DrillSpec; onSolved?: () => void }) 
       pulse('no')
       sound.bad()
       rerender()
-      setStatus({ kind: 'bad', msg: <><b className="mono">{moveLabel(ply.current, m.san)}</b> is legal, but it isn't the move we're practising. Try again.</> })
+      setStatus({ kind: 'bad', msg: <><b className="mono">{moveLabel(ply.current, m.san)}</b> is legal, but it isn't the move we're practicing. Try again.</> })
       timer.current = setTimeout(() => {
         g.current.undo()
         const p = pos[ply.current]
