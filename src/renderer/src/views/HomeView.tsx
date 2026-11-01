@@ -6,7 +6,7 @@ import { Bar, Ring, SideChip } from '../components/bits'
 import { fenAfter, lastMove, lineText } from '../lib/chess'
 import { courseMinutes, nextModule, openings, ordered } from '../lib/content'
 import { streaks } from '../lib/dates'
-import { ACHIEVEMENTS, doneCount, todayCount } from '../lib/progress'
+import { allBadges, doneCount, todayCount } from '../lib/progress'
 import { useStore } from '../lib/store'
 
 /** Everything the home search looks through for one opening. */
@@ -29,7 +29,7 @@ function CourseCard({ op }: { op: Opening }) {
     <article className={`course-card${complete ? ' complete' : ''}`} data-opening={op.id}>
       <button className="cc-open" onClick={() => enter(op.id)} aria-label={`Open the ${op.name} course`}>
         <span className="cc-banner">
-          <span className="cc-board"><Board fen={fenAfter(op.moves)} orientation="white" lastMove={lastMove(op.moves)} mini /></span>
+          <span className="cc-board"><Board fen={fenAfter(op.moves)} orientation={op.hero.orientation} lastMove={lastMove(op.moves)} mini /></span>
           <span className="cc-ring" title={`${pct}% complete`}><Ring value={pct / 100} label={`${pct}%`} /></span>
         </span>
         <span className="cc-body">
@@ -74,7 +74,8 @@ export function HomeView() {
   const { current } = streaks(s.activity)
   const today = todayCount(s.activity)
   const finished = openings.reduce((a, op) => a + doneCount(op, s.done), 0)
-  const badges = ACHIEVEMENTS.filter((a) => s.achievements[a.id]).length
+  const every = allBadges()
+  const badges = every.filter((a) => s.achievements[a.id]).length
   const goalLeft = s.dailyGoal - today
 
   return (
@@ -116,7 +117,7 @@ export function HomeView() {
         </div>
         <div className="hs">
           <span className="hs-ic brass"><Icon name="trophy" /></span>
-          <span><b>{badges}/{ACHIEVEMENTS.length}</b><small>achievements</small></span>
+          <span><b>{badges}/{every.length}</b><small>achievements</small></span>
         </div>
       </div>
 

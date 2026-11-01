@@ -173,19 +173,55 @@ export interface BookLine {
   status: 'popular' | 'respectable' | 'rare' | 'dubious' | 'trap' | 'historical'
 }
 
+/** The four practice bots. Their strength is fixed by the app; each course gives them a personality. */
+export type BotLevel = 'easy' | 'club' | 'sharp' | 'master'
+
+export interface BotPersona {
+  name: string
+  /** Chess piece symbol for the avatar, e.g. '♞'. */
+  glyph: string
+  /** One line under the name in the bot picker. */
+  blurb: string
+  /** What the bot says when a game starts. */
+  hi: string
+  /** Said when the bot checkmates the learner. */
+  botWins?: string
+  /** Said when the learner checkmates the bot. */
+  youWin?: string
+  /** Book lines this bot steers into, matched against BookLine names. */
+  likes?: RegExp
+}
+
+/** An achievement that belongs to one course. */
+export interface Badge {
+  /** Unique across all courses, because earned badges are saved by id. */
+  id: string
+  title: string
+  desc: string
+  /** Chess piece symbol for the medal. */
+  glyph: string
+  /** Earned by finishing a chapter, solving a drill ("<module>#<drill index>"), or passing the final exam. */
+  for: { chapter: string } | { drill: string } | { exam: true }
+}
+
 export interface Opening {
   id: string
   name: string
   alias: string
   side: Side
+  /** ECO range, e.g. "C60–C99". The home grid is sorted by it. */
   eco: string
   /** SAN moves that define the opening. */
   moves: string
   about: string
+  /** The board on the course overview and the home card. */
+  hero: { orientation: Color; arrows?: Arrow[]; caption: string }
   chapters: Chapter[]
   modules: Record<string, Module>
   map: MapNode
   book: BookLine[]
+  badges: Badge[]
+  bots: Record<BotLevel, BotPersona>
 }
 
 /** Helper that gives module files type checking without extra imports. */

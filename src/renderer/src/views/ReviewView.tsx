@@ -4,15 +4,18 @@ import { Board } from '../components/Board'
 import { Drill } from '../components/Drill'
 import { Icon } from '../components/Icon'
 import { SideChip, StageBar, HOME_CRUMB } from '../components/bits'
-import { fenAfter, lastMove, lineText, tokens } from '../lib/chess'
+import { fenAfter, isPrefix, lastMove, lineText, tokens } from '../lib/chess'
 import { moduleKey, ordered } from '../lib/content'
 import { preview, type Grade } from '../lib/srs'
 import { useStore } from '../lib/store'
 
 type Tab = 'cards' | 'trainer' | 'sheet'
 
-/** Where to start printing a line: skip 1.e4 e5 2.Nf3 Nc6 3.Bb5 when the line goes past it. */
-const shortFrom = (moves: string) => (tokens(moves).length > 5 ? 5 : 0)
+/** Where to start printing a line: skip the course's defining moves when the line goes past them. */
+function shortFrom(op: Opening, moves: string) {
+  const pre = tokens(op.moves), t = tokens(moves)
+  return t.length > pre.length && isPrefix(pre, t) ? pre.length : 0
+}
 
 function Flashcards({ op }: { op: Opening }) {
   const cards = useStore((s) => s.cards)
@@ -58,7 +61,7 @@ function Flashcards({ op }: { op: Opening }) {
           <>
             <div>
               <div className="flash-name">{cur.m.key.name}</div>
-              <p className="fine mono" style={{ marginTop: 6 }}>{lineText(cur.m.key.moves, shortFrom(cur.m.key.moves))}</p>
+              <p className="fine mono" style={{ marginTop: 6 }}>{lineText(cur.m.key.moves, shortFrom(op, cur.m.key.moves))}</p>
             </div>
             <p className="fine">{cur.m.takeaway}</p>
             <div className="srs">
@@ -126,7 +129,7 @@ function CheatSheet({ op }: { op: Opening }) {
                   {mods.map((m) => (
                     <tr key={m.id}>
                       <td><button className="linkbtn" onClick={() => go({ type: 'module', id: m.id })}>{m.id}</button> {m.key.name}</td>
-                      <td className="mono">{lineText(m.key.moves, shortFrom(m.key.moves))}</td>
+                      <td className="mono">{lineText(m.key.moves, shortFrom(op, m.key.moves))}</td>
                       <td>{m.takeaway}</td>
                     </tr>
                   ))}

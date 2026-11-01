@@ -1,5 +1,5 @@
 import type { Opening } from '@content'
-import { moduleKey, ordered } from './content'
+import { moduleKey, openings, ordered } from './content'
 import { dayKey, streaks } from './dates'
 import { sound } from './sound'
 import { useLive, useStore } from './store'
@@ -11,19 +11,14 @@ export interface Achievement {
   glyph: string
 }
 
-export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'first', title: 'First Steps', desc: 'Finish your first module', glyph: '♙' },
-  { id: 'fork', title: 'Fork Finder', desc: 'Solve the fork drill in Module 2.2', glyph: '♛' },
-  { id: 'ch1', title: 'Solid Ground', desc: 'Finish Chapter 1', glyph: '♘' },
-  { id: 'torture', title: 'Spanish Torture', desc: 'Finish the Closed Ruy Lopez', glyph: '♗' },
-  { id: 'marshall', title: 'Marshall Law', desc: 'Finish the Marshall Attack', glyph: '♜' },
-  { id: 'wall', title: 'Wall Builder', desc: 'Finish the Berlin Defense', glyph: '♖' },
-  { id: 'week', title: 'Week Warrior', desc: 'Keep a 7-day streak', glyph: '♕' },
-  { id: 'maestro', title: 'Maestro', desc: 'Pass the final exam', glyph: '♚' }
-]
+/** Badges that don't belong to any one course. */
+const FIRST: Achievement = { id: 'first', title: 'First Steps', desc: 'Finish your first module', glyph: '♙' }
+const WEEK: Achievement = { id: 'week', title: 'Week Warrior', desc: 'Keep a 7-day streak', glyph: '♕' }
 
-/** Badges for finishing a chapter, per opening. */
-const CHAPTER_BADGE: Record<string, Record<string, string>> = { 'ruy-lopez': { c1: 'ch1', c4: 'torture', c5: 'marshall', c7: 'wall' } }
+/** The badges shown for one course: the shared ones plus the course's own. */
+export const badgesFor = (op: Opening): Achievement[] => [FIRST, ...op.badges, WEEK]
+/** Every badge in the app. */
+export const allBadges = (): Achievement[] => [FIRST, ...openings.flatMap((o) => o.badges), WEEK]
 
 export const doneCount = (op: Opening, done: Record<string, number>) => ordered(op).filter(({ m }) => done[moduleKey(op, m.id)]).length
 export const chapterProgress = (op: Opening, chId: string, done: Record<string, number>): [number, number] => {
@@ -36,7 +31,7 @@ export const todayCount = (activity: Record<string, number>) => activity[dayKey(
 /** Awards a badge once and celebrates it. */
 export function award(id: string) {
   if (!useStore.getState().award(id)) return
-  const a = ACHIEVEMENTS.find((x) => x.id === id)
+  const a = allBadges().find((x) => x.id === id)
   if (!a) return
   setTimeout(() => {
     sound.win()
@@ -60,10 +55,19 @@ export function completeModule(op: Opening, id: string, from?: DOMRect) {
   if (todayCount(after.activity) === after.dailyGoal) setTimeout(() => live.toast({ html: `Daily goal reached: ${after.dailyGoal} module${after.dailyGoal > 1 ? 's' : ''} today` }), 1200)
   award('first')
   const ch = op.chapters.find((c) => c.modules.includes(id))
-  const badge = ch && CHAPTER_BADGE[op.id]?.[ch.id]
-  if (ch && badge) {
+  if (ch) {
     const [d, t] = chapterProgress(op, ch.id, after.done)
-    if (d === t) award(badge)
+    if (d === t) for (const b of op.badges) if ('chapter' in b.for && b.for.chapter === ch.id) award(b.id)
   }
   if (streaks(after.activity).current >= 7) award('week')
+}
+
+/** Awards any badge for solving drill `index` of a module. */
+export function drillSolved(op: Opening, moduleId: string, index: number) {
+  for (const b of op.badges) if ('drill' in b.for && b.for.drill === `${moduleId}#${index}`) award(b.id)
+}
+
+/** Awards the course's final-exam badge. */
+export function examPassed(op: Opening) {
+  for (const b of op.badges) if ('exam' in b.for) award(b.id)
 }

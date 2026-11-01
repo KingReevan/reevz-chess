@@ -1,32 +1,32 @@
-import type { BookLine, Opening } from '@content'
-import { isPrefix, norm } from './chess'
+import type { BookLine, BotLevel, BotPersona, Opening } from '@content'
+import { isPrefix, moveLabel, norm, tokens } from './chess'
 
-export interface Bot {
-  id: string
-  name: string
+/** How strong each bot plays. Names and personalities come from the course (Opening.bots). */
+interface Strength {
+  level: BotLevel
   elo: number
-  glyph: string
-  blurb: string
-  hi: string
   /** Stockfish "Skill Level" 0–20 once the bot leaves the book. */
   skill: number
   depth?: number
   movetime?: number
   /** Chance of playing a random legal move instead of the engine move. */
   blunder: number
-  /** Lines this bot likes to steer into. */
-  likes?: RegExp
   /** Plays the mistakes in trap lines, so you can practise punishing them. */
   fallsForTraps?: boolean
 }
 
-export const BOTS: Bot[] = [
-  { id: 'pepe', name: 'Pepe', elo: 600, glyph: '♟', blurb: 'Plays fast and falls for traps. Good for practising tricks.', hi: "¡Hola! I learned the Ruy Lopez yesterday. Let's go!", skill: 0, depth: 1, blunder: 0.3, fallsForTraps: true },
-  { id: 'lucia', name: 'Lucía', elo: 1100, glyph: '♞', blurb: 'Follows the main lines from the course, then plays sensibly.', hi: "Let's see if you remember your lines.", skill: 3, depth: 4, blunder: 0.08 },
-  { id: 'toro', name: 'El Toro', elo: 1600, glyph: '♜', blurb: 'Loves sharp lines: the Marshall Attack and the Schliemann.', hi: 'I charge at kings. Ready?', skill: 8, depth: 8, blunder: 0, likes: /marshall|schliemann|gambit|dilworth|riga/i },
-  { id: 'ruy', name: 'Don Ruy', elo: 2200, glyph: '♚', blurb: 'Knows every line in the course, then plays like a master.', hi: 'I wrote the book on this. Literally, in 1561.', skill: 16, movetime: 900, blunder: 0 }
+const STRENGTHS: Strength[] = [
+  { level: 'easy', elo: 600, skill: 0, depth: 1, blunder: 0.3, fallsForTraps: true },
+  { level: 'club', elo: 1100, skill: 3, depth: 4, blunder: 0.08 },
+  { level: 'sharp', elo: 1600, skill: 8, depth: 8, blunder: 0 },
+  { level: 'master', elo: 2200, skill: 16, movetime: 900, blunder: 0 }
 ]
-export const botById = (id: string) => BOTS.find((b) => b.id === id) ?? BOTS[1]
+
+export type Bot = Strength & BotPersona & { id: BotLevel }
+
+/** The four bots with this course's names and personalities. */
+export const botsFor = (op: Opening): Bot[] => STRENGTHS.map((st) => ({ ...st, ...op.bots[st.level], id: st.level }))
+export const botFor = (op: Opening, id: string): Bot => botsFor(op).find((b) => b.id === id) ?? botsFor(op)[1]
 
 const WEIGHT: Record<BookLine['status'], number> = { popular: 6, respectable: 3, rare: 1, historical: 1, dubious: 0.4, trap: 0 }
 
@@ -81,8 +81,8 @@ export function openingInfo(op: Opening, hist: string[]): OpeningInfo {
   }
   const next = candidates(op, hist)
   if (!best) {
-    if (!hist.length) return { name: 'Starting position', sub: 'Play 1.e4 to head for the Ruy Lopez.', out: false }
-    if (next.length) return { name: 'Heading for the Ruy Lopez', sub: 'Keep following the course moves.', out: false, moduleId: mod?.id }
+    if (!hist.length) return { name: 'Starting position', sub: `Play ${moveLabel(0, tokens(op.moves)[0])} to head for the ${op.name}.`, out: false }
+    if (next.length) return { name: `Heading for the ${op.name}`, sub: 'Keep following the course moves.', out: false, moduleId: mod?.id }
     return { name: 'Out of the course', sub: 'No course line matches these moves.', out: true, moduleId: mod?.id }
   }
   const out = !next.length && hist.length > best.moves.length

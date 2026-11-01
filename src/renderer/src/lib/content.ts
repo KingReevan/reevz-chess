@@ -1,7 +1,10 @@
-import { openings } from '@content'
+import { openings as all } from '@content'
 import type { Chapter, Module, Opening } from '@content'
 
-export { openings }
+/** "C60–C99" → "C60", so courses sort A00 … E99 like the ECO book. */
+const ecoStart = (op: Opening) => op.eco.match(/[A-E]\d{2}/)?.[0] ?? 'Z99'
+/** Every course, in ECO order. */
+export const openings = [...all].sort((a, b) => ecoStart(a).localeCompare(ecoStart(b)) || a.name.localeCompare(b.name))
 export const opening = (id: string): Opening => openings.find((o) => o.id === id) ?? openings[0]
 
 /** Modules in learning order, with their chapter. Missing module files are skipped. */

@@ -110,13 +110,8 @@ export function OverviewView({ op }: { op: Opening }) {
             </div>
           </div>
           <div className="hero-board">
-            <Board
-              fen={fenAfter(op.moves)}
-              orientation="white"
-              lastMove={lastMove(op.moves)}
-              arrows={[['b5', 'c6', 'yellow'], ['c6', 'e5', 'green'], ['f3', 'e5', 'red']]}
-            />
-            <p className="cap">The Spanish bishop attacks the knight that guards e5.</p>
+            <Board fen={fenAfter(op.moves)} orientation={op.hero.orientation} lastMove={lastMove(op.moves)} arrows={op.hero.arrows} />
+            <p className="cap">{op.hero.caption}</p>
           </div>
         </section>
 

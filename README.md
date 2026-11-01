@@ -2,8 +2,12 @@
 
 A desktop app for learning chess openings deeply, one bite-sized module at a time.
 
-The first course is **the Ruy Lopez** (Spanish Game), taught from both sides: 68 modules in 8 chapters,
-from opening principles for beginners to the Marshall Attack, the Berlin endgame and the Closed main lines.
+Two courses so far, each taught from both sides and shown as cards on the home screen:
+
+- **The Ruy Lopez** (Spanish Game): 68 modules in 8 chapters, from opening principles for beginners to the
+  Marshall Attack, the Berlin endgame and the Closed main lines.
+- **The King's Indian Defense**: 69 modules in 8 chapters, from the fianchetto set-up to the Mar del Plata,
+  the Bayonet, the Sämisch, the Four Pawns Attack and the Fianchetto Variation.
 
 - **Coursera-style modules.** Each one teaches a single idea in about 10 minutes, with step-by-step
   boards, arrows, practice drills and a short quiz. Progress is tracked per module and chapter.
@@ -41,8 +45,9 @@ npm run dist         # build the Windows installer into release/<version>/
 content/                    learning content (one TypeScript file per module)
   types.ts                  the content schema
   AUTHORING.md              how to write a module
-  openings/ruy-lopez/       chapters.ts, OUTLINE.md, book.json (bot opening book), modules/
-docs/research/              verified Ruy Lopez theory the course is built from
+  openings/<opening>/       index.ts (board, map, badges, bots), chapters.ts, OUTLINE.md, book.json, modules/
+docs/research/              verified theory each course is built from
+scripts/engine.mjs          asks Stockfish about a position, for checking tactical claims
 src/main/                   Electron main process (window, auto-update)
 src/preload/                the small API the app can call
 src/renderer/src/           the React app: views/, components/, lib/
@@ -54,7 +59,8 @@ tests/                      content validator, logic tests, end-to-end test
 Read `content/AUTHORING.md`, edit or add a file in `content/openings/<opening>/modules/`, list it in that
 opening's `chapters.ts`, then run `npm run test:content`. The validator replays every move with chess.js,
 so an illegal or mistyped move can't ship. To add a new opening, create a folder next to `ruy-lopez/`
-with the same shape and add it to `content/index.ts`; it appears as a card on the home grid, with its White/Black badge and completion.
+with the same shape and add it to `content/index.ts`. It appears as a card on the home grid, sorted by ECO code,
+with its White/Black badge and completion. Check tactical claims with `node scripts/engine.mjs "<SAN moves>"`.
 
 ### Publishing a release
 

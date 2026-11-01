@@ -18,9 +18,9 @@ They know how the pieces move and basic tactics like forks and pins. They do not
 ## File layout
 
 One file per module: `content/openings/<opening>/modules/<id>.ts`, default-exporting `defineModule({...})`.
-The schema with comments is in `content/types.ts`. Common move prefixes are in `content/lines.ts`
-(`RUY`, `MORPHY`, `CLOSED7`, `CLOSED`, `CLOSED_OO`, `OPEN`, `BERLIN`, `EXCHANGE`).
-The plan for every module is in `content/openings/ruy-lopez/OUTLINE.md`.
+The schema with comments is in `content/types.ts`. Common move prefixes live next to each course:
+`content/lines.ts` for the Ruy Lopez (`RUY`, `MORPHY`, `CLOSED`, ...) and `content/openings/<opening>/lines.ts`
+for newer courses. The plan for every module is in `content/openings/<opening>/OUTLINE.md`.
 
 ## Module shape
 
@@ -49,7 +49,7 @@ The plan for every module is in `content/openings/ruy-lopez/OUTLINE.md`.
 - Step `title`: 2–6 words. Step `text`: 1–3 short sentences. Begin with the move in notation
   ("9...Na5.") and then explain it.
 - Arrows mean the same thing everywhere:
-  - **green**: a good move, a defence, or the plan to follow
+  - **green**: a good move, a defense, or the plan to follow
   - **red**: an attack, a threat or a check
   - **yellow**: the key idea or target
   - **blue**: an open line, a piece route, or an alternative
@@ -73,11 +73,12 @@ The plan for every module is in `content/openings/ruy-lopez/OUTLINE.md`.
 
 ## Accuracy rules (important)
 
-1. **Use the research.** Lines come from `docs/research/ruy-lopez-lines.json` and the explanations in
-   `docs/research/ruy-lopez-theory.md`. Prefer the exact research move orders.
-2. **Check every tactical claim.** If a step says "this is mate", "the queen is pinned", "this forks e5 and e4"
-   or "the knight is trapped", confirm it. When unsure, write a small chess.js script in your scratch folder
-   to check attacks, checks or mates. Never guess.
+1. **Use the research.** Lines come from `docs/research/<opening>-lines.json` and the explanations in
+   `docs/research/<opening>-theory.md`. Prefer the exact research move orders.
+2. **Check every tactical claim.** If a step says "this is mate", "the queen is pinned", "this forks e5 and e4",
+   "the knight is trapped" or "this wins a pawn", confirm it with the engine:
+   `node scripts/engine.mjs "<SAN moves>" --depth 20` prints Stockfish's best lines (scores from White's view).
+   For attacks, checks and mates, a small chess.js script also works. Never guess.
 3. **Model games:** only mention games the research doc lists as confirmed, and never state a result
    the doc marks as unconfirmed.
 4. No engine evaluations or statistics. Describe positions in words ("White is better", "roughly equal").
@@ -86,7 +87,7 @@ The plan for every module is in `content/openings/ruy-lopez/OUTLINE.md`.
 ## Checking your work
 
 ```
-npx vitest run tests/content.test.ts -t "module 3.4"
+npx vitest run tests/content.test.ts -t "Ruy Lopez > module 3.4"
 ```
 
 The validator replays every line, checks every step exists, every arrow is a real square, drills end

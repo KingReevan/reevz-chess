@@ -4,7 +4,7 @@ import { Icon } from '../components/Icon'
 import { QuestionCard } from '../components/Quiz'
 import { Bar, StageBar, HOME_CRUMB } from '../components/bits'
 import { ordered } from '../lib/content'
-import { award, doneCount } from '../lib/progress'
+import { doneCount, examPassed } from '../lib/progress'
 import { sound } from '../lib/sound'
 import { useLive, useStore } from '../lib/store'
 
@@ -56,7 +56,7 @@ function Session({ op, items, practice, onExit }: { op: Opening; items: Item[]; 
       recordExam(op.id, score)
       if (score >= PASS) {
         sound.win()
-        award('maestro')
+        examPassed(op)
         setTimeout(() => { const r = resultRef.current?.getBoundingClientRect(); if (r) burst(r.left + r.width / 2, r.top + 40) }, 100)
       }
     }
@@ -72,7 +72,7 @@ function Session({ op, items, practice, onExit }: { op: Opening; items: Item[]; 
       <div ref={resultRef} className={`card result${pass && !practice ? ' pass' : ''}`}>
         <span className="eyebrow">{practice ? 'Practice round' : pass ? 'Passed' : 'Not yet'}</span>
         <div className="scorebig">{score}%</div>
-        <p>{right} of {items.length} right on the first try. {practice ? '' : pass ? 'You have mastered the Ruy Lopez course. Well played!' : `You need ${PASS}% to pass. Review the weak chapters below and try again.`}</p>
+        <p>{right} of {items.length} right on the first try. {practice ? '' : pass ? `You have mastered the ${op.name} course. Well played!` : `You need ${PASS}% to pass. Review the weak chapters below and try again.`}</p>
         <div className="chbars">
           {[...byCh.entries()].sort((a, b) => a[0] - b[0]).map(([n, [a, b]]) => (
             <div key={n} title={op.chapters[n - 1]?.title}><span>{n}</span><Bar value={a / b} /><span>{a}/{b}</span></div>

@@ -41,9 +41,11 @@ interface Persisted {
   view: View
   /** Expanded chapters in the course sidebar, as "<opening>/<chapter>". */
   openChapters: string[]
+  /** Bot level: easy, club, sharp or master. */
   bot: string
   playAs: 'white' | 'black' | 'random'
-  startFrom: 'start' | 'spanish'
+  /** 'opening' starts practice games from the course's defining moves. */
+  startFrom: 'start' | 'opening'
 }
 
 interface Actions {
@@ -67,7 +69,7 @@ const initial: Persisted = {
   theme: 'system', board: 'felt', dailyGoal: 2, sound: true,
   leftOpen: true, rightOpen: true, rightTab: 'coach',
   view: { type: 'home' }, openChapters: ['ruy-lopez/c1'],
-  bot: 'lucia', playAs: 'white', startFrom: 'start'
+  bot: 'club', playAs: 'white', startFrom: 'start'
 }
 
 export const useStore = create<Persisted & Actions>()(
@@ -105,13 +107,19 @@ export const useStore = create<Persisted & Actions>()(
     }),
     {
       name: 'reevz-chess',
-      version: 2,
+      version: 3,
       // v1 had one opening accordion in the sidebar and chapter ids without an opening prefix.
       migrate: (old, version) => {
         const s = old as Partial<Persisted> & { courseOpen?: boolean }
         if (version < 2) {
           s.openChapters = (s.openChapters ?? []).map((c) => (c.includes('/') ? c : `ruy-lopez/${c}`))
           delete s.courseOpen
+        }
+        if (version < 3) {
+          // v3: bots are named per course, so they are saved by level; 'spanish' became 'opening'.
+          const level: Record<string, string> = { pepe: 'easy', lucia: 'club', toro: 'sharp', ruy: 'master' }
+          s.bot = level[s.bot ?? ''] ?? 'club'
+          if ((s.startFrom as string) === 'spanish') s.startFrom = 'opening'
         }
         return s as Persisted & Actions
       },

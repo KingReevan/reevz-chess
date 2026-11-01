@@ -51,10 +51,12 @@ try {
   check('card shows course completion', /^0\/\d+$/.test(await card.locator('.count').textContent()) && (await card.locator('.cc-ring').textContent()) === '0%')
   check('card badge says White · Black', (await card.locator('.side').textContent()).includes('White · Black'))
   check('card board renders pieces', (await card.locator('piece').count()) >= 32)
+  const order = await win.locator('.course-card[data-opening]').evaluateAll((els) => els.map((e) => e.dataset.opening))
+  check('cards are sorted by ECO code', order.join(',') === 'ruy-lopez,kings-indian', order.join(','))
   await win.fill('#search', 'sicilian')
   check('home search hides non-matching openings', (await win.locator('.course-card[data-opening]').count()) === 0)
   await win.fill('#search', 'spanish')
-  check('home search finds the Ruy Lopez by its alias', (await win.locator('.course-card[data-opening]').count()) === 1)
+  check('home search finds the Ruy Lopez by its alias', (await win.locator('.course-card[data-opening]').count()) === 1 && (await card.count()) === 1)
   await win.fill('#search', '')
   await win.screenshot({ path: join(shots, '00-home-light.png') })
 
@@ -198,6 +200,24 @@ try {
   check('Continue opens the first unfinished module', (await win.locator('.row.on').getAttribute('data-row')) === '1.1')
   await win.locator('.left .back').click()
   check('All openings goes back to the grid', (await win.locator('.course-grid').count()) === 1)
+
+  // A second course keeps its own progress, board, bots and chapters
+  const kid = win.locator('.course-card[data-opening="kings-indian"]')
+  check("King's Indian card has its own progress", /^0\/\d+$/.test(await kid.locator('.count').textContent()))
+  await kid.locator('.cc-open').click()
+  await win.waitForSelector('.hero h1')
+  check("King's Indian overview opens", (await win.textContent('.hero h1')).includes("King's Indian"))
+  check("King's Indian sidebar lists only its chapters", (await win.textContent('.course-name')) === "King's Indian Defense" && (await win.locator('.left .ch').count()) === 9)
+  check("King's Indian board is seen from Black's side", (await win.locator('.hero-board .cg-wrap.orientation-black').count()) === 1)
+  await win.locator('.tabs button', { hasText: 'Play' }).click()
+  check("King's Indian bots have their own names", (await win.locator('.bot', { hasText: 'Asha' }).count()) === 1 && (await win.locator('.seg button', { hasText: 'After 4...d6' }).count()) === 1)
+  await win.locator('[data-row="1.1"]').click()
+  await win.waitForSelector('.l-title')
+  check("King's Indian module 1.1 opens", (await win.textContent('.l-title')).length > 3 && (await win.locator('.wt').count()) >= 2)
+  await win.locator('.stage').evaluate((el) => el.scrollTo({ top: 0 }))
+  await win.screenshot({ path: join(shots, '08-kid-module-dark.png') })
+  await win.locator('.left .back').click()
+  await win.waitForSelector('.course-grid')
 
   // 15. Progress survives a restart, and the app opens on the grid again
   await app.close()

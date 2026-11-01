@@ -6,7 +6,7 @@ import { Quiz } from '../components/Quiz'
 import { LevelBars, SideChip, StageBar, HOME_CRUMB } from '../components/bits'
 import { Walkthrough } from '../components/Walkthrough'
 import { moduleKey, ordered } from '../lib/content'
-import { award, completeModule } from '../lib/progress'
+import { completeModule, drillSolved } from '../lib/progress'
 import { Rich } from '../lib/rich'
 import { useLive, useStore } from '../lib/store'
 
@@ -108,7 +108,7 @@ export function ModuleView({ op, m, ch }: { op: Opening; m: Module; ch: Chapter 
               d={d}
               onSolved={() => {
                 solveDrill(`${key}#${i}`)
-                if (key === 'ruy-lopez/2.2' && i === 0) award('fork')
+                drillSolved(op, m.id, i)
               }}
             />
           ))}

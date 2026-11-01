@@ -5,7 +5,7 @@ import type { Opening } from '@content'
 import { Board, BoardTools } from '../components/Board'
 import { Glyph, Icon } from '../components/Icon'
 import { StageBar, HOME_CRUMB } from '../components/bits'
-import { botById, candidates, openingInfo, pickWeighted } from '../lib/book'
+import { botFor, candidates, openingInfo, pickWeighted } from '../lib/book'
 import { colorOf, dests, tokens, type Color } from '../lib/chess'
 import { engine } from '../lib/engine'
 import { playMoveSound, sound } from '../lib/sound'
@@ -20,7 +20,7 @@ export function PlayView({ op }: { op: Opening }) {
   const startFrom = useStore((s) => s.startFrom)
   const go = useStore((s) => s.go)
   const setCoach = useLive((s) => s.setCoach)
-  const bot = botById(botId)
+  const bot = botFor(op, botId)
 
   const g = useRef(new Chess())
   const token = useRef(0)
@@ -44,16 +44,16 @@ export function PlayView({ op }: { op: Opening }) {
       if (c.isCheckmate()) {
         if (colorOf(c.turn()) === me) {
           setStatus({ kind: 'bad', msg: `Checkmate. ${bot.name} wins this one.` })
-          setSay('¡Gracias! Want a rematch?')
+          setSay(bot.botWins ?? 'Good game! Want a rematch?')
         } else {
           sound.win()
           setStatus({ kind: 'win', msg: 'Checkmate. You win!' })
-          setSay('¡Bien jugado! Well played.')
+          setSay(bot.youWin ?? 'Well played!')
         }
       } else setStatus({ kind: '', msg: 'Draw.' })
       return true
     },
-    [bot.name]
+    [bot]
   )
 
   const botTurn = useCallback(
@@ -97,7 +97,7 @@ export function PlayView({ op }: { op: Opening }) {
   useEffect(() => {
     token.current++
     const c = new Chess()
-    if (startFrom === 'spanish') tokens(op.moves).forEach((s) => c.move(s))
+    if (startFrom === 'opening') tokens(op.moves).forEach((s) => c.move(s))
     g.current = c
     inBook.current = true
     const me: Color = playAs === 'random' ? (Math.random() < 0.5 ? 'white' : 'black') : playAs
@@ -113,7 +113,7 @@ export function PlayView({ op }: { op: Opening }) {
     engine.start().then(setEngineOk)
     rerender()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [botId, playAs, startFrom, game])
+  }, [botId, playAs, startFrom, game, op.id])
 
   const userMove = (mv: string | { from: string; to: string; promotion: string }) => {
     if (over || colorOf(g.current.turn()) !== color) return

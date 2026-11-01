@@ -1,7 +1,7 @@
 /**
  * Content validator. Replays every move sequence in every course with chess.js and
  * checks the rules from content/types.ts. Run with `npm run test:content`.
- * Filter to one module with: npx vitest run tests/content.test.ts -t "module 2.2"
+ * Filter to one module with: npx vitest run tests/content.test.ts -t "Ruy Lopez > module 2.2" (course name, " > ", module).
  */
 import { describe, expect, it } from 'vitest'
 import { Chess } from 'chess.js'

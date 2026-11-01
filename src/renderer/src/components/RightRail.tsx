@@ -1,9 +1,9 @@
 import type { Opening } from '@content'
-import { BOTS, botById, candidates, openingInfo } from '../lib/book'
-import { moveLabel } from '../lib/chess'
+import { botFor, botsFor, candidates, openingInfo } from '../lib/book'
+import { moveLabel, tokens } from '../lib/chess'
 import { chapterOf, moduleKey, nextModule, ordered } from '../lib/content'
 import { lastWeek, streaks } from '../lib/dates'
-import { ACHIEVEMENTS, chapterProgress, doneCount, todayCount } from '../lib/progress'
+import { badgesFor, chapterProgress, doneCount, todayCount } from '../lib/progress'
 import { useLive, useStore, type RightTab } from '../lib/store'
 import { Bar, Ring } from './bits'
 import { Glyph, Icon, type IconName } from './Icon'
@@ -116,9 +116,10 @@ function Coach({ op }: { op: Opening }) {
   )
 }
 
-function Play() {
+function Play({ op }: { op: Opening }) {
   const s = useStore()
-  const bot = botById(s.bot)
+  const bot = botFor(op, s.bot)
+  const key = tokens(op.moves)
   const opt = <K extends 'playAs' | 'startFrom'>(k: K, v: (typeof s)[K], label: string) => (
     <button aria-selected={s[k] === v} onClick={() => s.set({ [k]: v } as Partial<typeof s>)}>{label}</button>
   )
@@ -127,7 +128,7 @@ function Play() {
       <div className="rcard">
         <h3>Choose a bot</h3>
         <div className="bots">
-          {BOTS.map((b) => (
+          {botsFor(op).map((b) => (
             <button key={b.id} className="bot" aria-pressed={s.bot === b.id} onClick={() => s.set({ bot: b.id })}>
               <span className="avatar"><Glyph g={b.glyph} /></span>
               <span><b>{b.name}<span>{b.elo}</span></b><span className="bot-d">{b.blurb}</span></span>
@@ -137,7 +138,7 @@ function Play() {
       </div>
       <div className="rcard">
         <div className="optrow"><label>Play as</label><div className="seg">{opt('playAs', 'white', 'White')}{opt('playAs', 'black', 'Black')}{opt('playAs', 'random', 'Random')}</div></div>
-        <div className="optrow"><label>Start from</label><div className="seg two">{opt('startFrom', 'start', 'Move 1')}{opt('startFrom', 'spanish', 'After 3.Bb5')}</div></div>
+        <div className="optrow"><label>Start from</label><div className="seg two">{opt('startFrom', 'start', 'Move 1')}{opt('startFrom', 'opening', `After ${moveLabel(key.length - 1, key[key.length - 1])}`)}</div></div>
         <button className="btn primary" onClick={() => s.go({ type: 'play' })}><Icon name="play" /> Play {bot.name}</button>
         <p className="fine">Bots play the opening lines from the course first, so every game drills your opening.</p>
       </div>
@@ -156,6 +157,7 @@ function Progress({ op }: { op: Opening }) {
   const total = ordered(op).length
   const due = Object.entries(s.cards).filter(([k, c]) => k.startsWith(op.id + '/') && c.due <= now).length
   const goalLeft = s.dailyGoal - today
+  const badges = badgesFor(op)
   return (
     <>
       <div className="rcard">
@@ -196,9 +198,9 @@ function Progress({ op }: { op: Opening }) {
         </div>
       </div>
       <div className="rcard">
-        <h3>Achievements <span className="count">{ACHIEVEMENTS.filter((a) => s.achievements[a.id]).length}/{ACHIEVEMENTS.length}</span></h3>
+        <h3>Achievements <span className="count">{badges.filter((a) => s.achievements[a.id]).length}/{badges.length}</span></h3>
         <div className="badges">
-          {ACHIEVEMENTS.map((a) => (
+          {badges.map((a) => (
             <div key={a.id} className={`badge${s.achievements[a.id] ? ' got' : ''}`} title={a.desc}>
               <span className="medal"><Glyph g={a.glyph} /></span>
               <span>{a.title}</span>
@@ -224,7 +226,7 @@ export function RightRail({ op }: { op: Opening }) {
       </div>
       <div className="rbody">
         {tab === 'coach' && <Coach op={op} />}
-        {tab === 'play' && <Play />}
+        {tab === 'play' && <Play op={op} />}
         {tab === 'progress' && <Progress op={op} />}
       </div>
     </aside>

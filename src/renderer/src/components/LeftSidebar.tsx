@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { Chapter, Module, Opening } from '@content'
 import { fenAfter, lineText } from '../lib/chess'
-import { chapterKey, moduleKey, ordered } from '../lib/content'
+import { chapterKey, chapterOf, moduleKey, nextModule, ordered } from '../lib/content'
 import { chapterProgress, doneCount } from '../lib/progress'
 import { useLive, useStore } from '../lib/store'
 import { Board } from './Board'
@@ -122,6 +122,14 @@ export function LeftSidebar({ op }: { op: Opening }) {
   // A search typed in one course shouldn't follow the learner into the next.
   useEffect(() => () => setQuery(''), [op.id, setQuery])
 
+  // First visit to a course: open the chapter that holds the next module, so there's something to click.
+  useEffect(() => {
+    const st = useStore.getState()
+    if (st.openChapters.some((k) => k.startsWith(`${op.id}/`))) return
+    const next = nextModule(op, st.done)
+    st.toggleChapter(chapterKey(op, next ? chapterOf(op, next.id).id : op.chapters[0].id), true)
+  }, [op])
+
   return (
     <aside className="left" aria-label={`${op.name} course`}>
       <div className="side-top">
@@ -129,7 +137,7 @@ export function LeftSidebar({ op }: { op: Opening }) {
           <Icon name="left" /> All openings
         </button>
         <button className="course-head" onClick={() => go({ type: 'overview' })} title="Course overview">
-          <span className="course-thumb"><Board fen={fenAfter(op.moves)} orientation="white" mini /></span>
+          <span className="course-thumb"><Board fen={fenAfter(op.moves)} orientation={op.hero.orientation} mini /></span>
           <span className="course-meta">
             <span className="course-name">{op.name}</span>
             <span className="course-moves">{lineText(op.moves)}</span>
