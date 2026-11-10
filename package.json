@@ -1,7 +1,7 @@
 {
   "name": "reevz-chess",
   "productName": "Reevz Chess",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Learn chess openings one bite-sized module at a time.",
   "main": "./out/main/index.js",
   "author": "KingReevan",
